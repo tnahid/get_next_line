@@ -12,63 +12,88 @@
 
 #include "get_next_line.h"
 
-static char	*read_buffer(int fd)
+static char	*read_buffer(int fd, char *chyata)
 {
 	char	*buffer;
-	ssize_t	ret;
+	ssize_t	rd;
 
-	buffer = malloc(BUFFER_SIZE + 1);
+	buffer = malloc((size_t)BUFFER_SIZE + 1);
 	if (!buffer)
+	{
+		free(chyata);
 		return (NULL);
-	ret = read(fd, buffer, BUFFER_SIZE);
-	if (ret == -1 || ret == 0)
-		return (NULL);
-	buffer[ret] = '\0';
-	return (buffer);
+	}
+	rd = 1;
+	while ((ft_strchr(chyata, '\n') == -1) && rd > 1)
+	{
+		rd = read(fd, buffer, BUFFER_SIZE);
+		if (rd == -1)
+		{
+			free(buffer);
+			free(chyata);
+			return (NULL);
+		}
+		buffer[rd] = '\0';
+		chyata = ft_strjoin(chyata, buffer);
+	}
+	free(buffer);
+	return (chyata);
 }
 
-static int	extract_from_buffer(char *buffer, char **saved)
+static char	*get_line(char *chyata)
 {
-	char	*tmp;
+	char	*line;
+	size_t	i;
 
-	tmp = ft_strchr(buffer, '\n');
-	if (tmp)
+	if (!chyata || !chyata[0])
+		return(NULL);
+	i = ft_strchr(chyata, '\n');
+	line = malloc(i + 2);
+	if (!line)
+		return (NULL);
+	ft_strlcpy(line, chyata, i + 2);
+	return (line);
+}
+
+static char	*get_chyata(char *chyata)
+{
+	char	*res;
+	size_t	i;
+	size_t	j;
+
+	j = ft_strlen(chyata);
+	i = ft_strchr(chyata, '\n');
+	if (!chyata[i + 1] || !chyata[i])
+		return (NULL);
+	res = malloc(j - i);
+	if (!res)
 	{
-		*saved = ft_strjoin(*saved, tmp + 1);
-		*(tmp + 1) = '\0';
-		return (1);
+		free(chyata);
+		return (NULL);
 	}
-	else
-	{
-		*saved = ft_strjoin(*saved, buffer);
-		if (ft_strlen(buffer) != BUFFER_SIZE)
-			return (1);
-		return (0);
-	}
+	ft_strlcpy(res, chyata + i + 1, j - i);
+	free(chyata);
+	return (res);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*saved = NULL;
+	static char	*chyata;
 	char		*line;
-	char		*buffer;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	while (1)
-	{	
-		line = saved;
-		buffer = read_buffer(fd);
-		if (buffer == NULL)
+	if (!chyata)
+	{
+		chyata = malloc(1);
+		if (!chyata)
 			return (NULL);
-		
-		if (extract_from_buffer(buffer, &saved))
-		{
-			line = ft_strjoin(line, buffer);
-			break ;
-		}
-		else
-			line = ft_strjoin(line, saved);	
+		chyata[0] = '\0';
 	}
-	return (line);
+	chyata = read_buffer(fd, chyata);
+	if (!chyata)
+		return (NULL);
+	line = get_line(chyata);
+	chyata = get_chyata(chyata);
+	return(NULL);
 }

@@ -16,15 +16,13 @@ size_t	ft_strlen(char *str)
 {
 	size_t	len;
 
-	if (str == NULL)
-		return (0);
 	len = 0;
 	while (str[len])
 		len++;
 	return (len);
 }
 
-char	*ft_strchr(char *str, int c)
+int	ft_strchr(char *str, int c)
 {
 	size_t	i;
 
@@ -32,8 +30,8 @@ char	*ft_strchr(char *str, int c)
 	while (str[i] && str[i] != (char)c)
 		i++;
 	if (str[i] == (char)c)
-		return ((char *)&str[i]);
-	return (NULL);
+		return (i);
+	return (-1);
 }
 
 size_t	ft_strlcpy(char *dst, char *src, size_t size)
@@ -45,11 +43,6 @@ size_t	ft_strlcpy(char *dst, char *src, size_t size)
 	s_len = ft_strlen(src);
 	if (size == 0)
 		return (s_len);
-	if (src == NULL)
-	{
-		dst[0] = '\0';
-		return (s_len);
-	}
 	while (src[i] && i < size - 1)
 	{
 		dst[i] = src[i];
@@ -59,18 +52,18 @@ size_t	ft_strlcpy(char *dst, char *src, size_t size)
 	return (s_len);
 }
 
-char	*ft_strdup(char *str)
-{
-	size_t	len;
-	char	*dup;
+// char	*ft_strdup(char *str)
+// {
+// 	size_t	len;
+// 	char	*dup;
 
-	len = ft_strlen(str);
-	dup = (char *)malloc(len + 1);
-	if (dup == NULL)
-		return (NULL);
-	ft_strlcpy(dup, str, len + 1);
-	return (dup);
-}
+// 	len = ft_strlen(str);
+// 	dup = (char *)malloc(len + 1);
+// 	if (dup == NULL)
+// 		return (NULL);
+// 	ft_strlcpy(dup, str, len + 1);
+// 	return (dup);
+// }
 
 char	*ft_strjoin(char *s1, char *s2)
 {
@@ -78,6 +71,8 @@ char	*ft_strjoin(char *s1, char *s2)
 	size_t	len2;
 	char	*str;
 
+	if (!s2 || !s1)
+		return (NULL);
 	len1 = ft_strlen(s1);
 	len2 = ft_strlen(s2);
 	if (len2 == SIZE_MAX || len1 > SIZE_MAX - len2 - 1)
