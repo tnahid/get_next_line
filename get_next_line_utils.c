@@ -1,37 +1,34 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: tnahid <tnahid@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/11/13 15:07:57 by tnahid            #+#    #+#             */
-/*   Updated: 2026/11/13 15:19:34 by tnahid           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "get_next_line.h"
 
-size_t	ft_strlen(char *str)
-{
-	size_t	len;
-
-	len = 0;
-	while (str[len])
-		len++;
-	return (len);
-}
-
-int	ft_strchr(char *str, int c)
+size_t	ft_strlen(char *s)
 {
 	size_t	i;
 
 	i = 0;
-	while (str[i] && str[i] != (char)c)
+	if (!s)
+		return (0);
+	while (s[i])
 		i++;
-	if (str[i] == (char)c)
-		return (i);
-	return (-1);
+	return (i);
+}
+
+char	*ft_strchr(char *s, int c)
+{
+	size_t	i;
+
+	if (!s)
+		return (NULL);
+	i = 0;
+	while (s[i])
+	{
+		if (s[i] == (char)c)
+			return ((char *)&s[i]);
+		i++;
+	}
+	if ((char)c == '\0')
+		return ((char *)&s[i]);
+	return (NULL);
 }
 
 size_t	ft_strlcpy(char *dst, char *src, size_t size)
@@ -43,7 +40,7 @@ size_t	ft_strlcpy(char *dst, char *src, size_t size)
 	s_len = ft_strlen(src);
 	if (size == 0)
 		return (s_len);
-	while (src[i] && i < size - 1)
+	while (i < size - 1 && src[i])
 	{
 		dst[i] = src[i];
 		i++;
@@ -52,34 +49,29 @@ size_t	ft_strlcpy(char *dst, char *src, size_t size)
 	return (s_len);
 }
 
-// char	*ft_strdup(char *str)
-// {
-// 	size_t	len;
-// 	char	*dup;
-
-// 	len = ft_strlen(str);
-// 	dup = (char *)malloc(len + 1);
-// 	if (dup == NULL)
-// 		return (NULL);
-// 	ft_strlcpy(dup, str, len + 1);
-// 	return (dup);
-// }
-
 char	*ft_strjoin(char *s1, char *s2)
 {
+	char	*str;
 	size_t	len1;
 	size_t	len2;
-	char	*str;
 
-	if (!s2 || !s1)
+	if (!s2)
 		return (NULL);
+	if (!s1)
+	{
+		s1 = malloc(1);
+		if (!s1)
+			return (NULL);
+		s1[0] = '\0';
+	}
 	len1 = ft_strlen(s1);
 	len2 = ft_strlen(s2);
-	if (len2 == SIZE_MAX || len1 > SIZE_MAX - len2 - 1)
+	str = malloc(len1 + len2 + 1);
+	if (!str)
+	{
+		free(s1);
 		return (NULL);
-	str = (char *)malloc(len1 + len2 + 1);
-	if (str == NULL)
-		return (NULL);
+	}
 	ft_strlcpy(str, s1, len1 + 1);
 	ft_strlcpy(str + len1, s2, len2 + 1);
 	free(s1);

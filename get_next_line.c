@@ -1,99 +1,89 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: tnahid <tnahid@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/11/13 15:07:48 by tnahid            #+#    #+#             */
-/*   Updated: 2026/11/13 17:14:06 by tnahid           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "get_next_line.h"
 
-static char	*read_buffer(int fd, char *chyata)
+static char	*read_and_stash(int fd, char *stash)
 {
-	char	*buffer;
-	ssize_t	rd;
+	char	*buf;
+	ssize_t	bytes_read;
 
-	buffer = malloc((size_t)BUFFER_SIZE + 1);
-	if (!buffer)
+	buf = malloc(sizeof(char) * ((size_t)BUFFER_SIZE + 1));
+	if (!buf)
 	{
-		free(chyata);
+		free(stash);
 		return (NULL);
 	}
-	rd = 1;
-	while ((ft_strchr(chyata, '\n') == -1) && rd > 1)
+	bytes_read = 1;
+	while (!ft_strchr(stash, '\n') && bytes_read > 0)
 	{
-		rd = read(fd, buffer, BUFFER_SIZE);
-		if (rd == -1)
+		bytes_read = read(fd, buf, BUFFER_SIZE);
+		if (bytes_read == -1)
 		{
-			free(buffer);
-			free(chyata);
+			free(buf);
+			free(stash);
 			return (NULL);
 		}
-		buffer[rd] = '\0';
-		chyata = ft_strjoin(chyata, buffer);
+		buf[bytes_read] = '\0';
+		stash = ft_strjoin(stash, buf);
 	}
-	free(buffer);
-	return (chyata);
+	free(buf);
+	return (stash);
 }
 
-static char	*get_line(char *chyata)
+static char	*extract_line(char *stash)
 {
 	char	*line;
 	size_t	i;
 
-	if (!chyata || !chyata[0])
-		return(NULL);
-	i = ft_strchr(chyata, '\n');
-	line = malloc(i + 2);
+	i = 0;
+	if (!stash || !stash[0])
+		return (NULL);
+	while (stash[i] && stash[i] != '\n')
+		i++;
+	if (stash[i] == '\n')
+		i++;
+	line = malloc(sizeof(char) * (i + 1));
 	if (!line)
 		return (NULL);
-	ft_strlcpy(line, chyata, i + 2);
+	ft_strlcpy(line, stash, i + 1);
 	return (line);
 }
 
-static char	*get_chyata(char *chyata)
+static char	*clean_stash(char *stash)
 {
-	char	*res;
+	char	*new_stash;
 	size_t	i;
 	size_t	j;
 
-	j = ft_strlen(chyata);
-	i = ft_strchr(chyata, '\n');
-	if (!chyata[i + 1] || !chyata[i])
-		return (NULL);
-	res = malloc(j - i);
-	if (!res)
+	i = 0;
+	while (stash[i] && stash[i] != '\n')
+		i++;
+	if (!stash[i] || !stash[i + 1])
 	{
-		free(chyata);
+		free(stash);
 		return (NULL);
 	}
-	ft_strlcpy(res, chyata + i + 1, j - i);
-	free(chyata);
-	return (res);
+	j = ft_strlen(stash);
+	new_stash = malloc(sizeof(char) * (j - i));
+	if (!new_stash)
+	{
+		free(stash);
+		return (NULL);
+	}
+	ft_strlcpy(new_stash, stash + i + 1, j - i);
+	free(stash);
+	return (new_stash);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*chyata;
+	static char	*stash;
 	char		*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	if (!chyata)
-	{
-		chyata = malloc(1);
-		if (!chyata)
-			return (NULL);
-		chyata[0] = '\0';
-	}
-	chyata = read_buffer(fd, chyata);
-	if (!chyata)
+	stash = read_and_stash(fd, stash);
+	if (!stash)
 		return (NULL);
-	line = get_line(chyata);
-	chyata = get_chyata(chyata);
-	return(NULL);
+	line = extract_line(stash);
+	stash = clean_stash(stash);
+	return (line);
 }
