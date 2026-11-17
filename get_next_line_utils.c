@@ -1,33 +1,40 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tnahid <tnahid@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/11/17 00:25:54 by tnahid            #+#    #+#             */
+/*   Updated: 2026/11/17 00:25:55 by tnahid           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "get_next_line.h"
 
-size_t	ft_strlen(char *s)
+size_t	ft_strlen(char *str)
 {
 	size_t	i;
 
-	i = 0;
-	if (!s)
+	if (!str)
 		return (0);
-	while (s[i])
+	i = 0;
+	while (str[i])
 		i++;
 	return (i);
 }
 
-char	*ft_strchr(char *s, int c)
+char	*ft_strchr(char *str, int c)
 {
 	size_t	i;
 
-	if (!s)
+	if (!str)
 		return (NULL);
 	i = 0;
-	while (s[i])
-	{
-		if (s[i] == (char)c)
-			return ((char *)&s[i]);
+	while (str[i] && str[i] != (char)c)
 		i++;
-	}
-	if ((char)c == '\0')
-		return ((char *)&s[i]);
+	if (str[i] == (char)c)
+		return (&str[i]);
 	return (NULL);
 }
 
