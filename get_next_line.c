@@ -6,7 +6,7 @@
 /*   By: tnahid <tnahid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/17 00:25:47 by tnahid            #+#    #+#             */
-/*   Updated: 2026/11/17 00:33:53 by tnahid           ###   ########.fr       */
+/*   Updated: 2026/11/18 01:16:27 by tnahid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,20 +19,13 @@ static char	*read_buffer(int fd, char *leftover)
 
 	buffer = malloc((size_t)BUFFER_SIZE + 1);
 	if (!buffer)
-	{
-		free(leftover);
-		return (NULL);
-	}
+		return (free(leftover), NULL);
 	rd = 1;
 	while (!ft_strchr(leftover, SEP) && rd > 0)
 	{
 		rd = read(fd, buffer, BUFFER_SIZE);
 		if (rd == -1)
-		{
-			free(buffer);
-			free(leftover);
-			return (NULL);
-		}
+			return (free(buffer), free(leftover), NULL);
 		buffer[rd] = '\0';
 		leftover = ft_strjoin(leftover, buffer);
 	}
@@ -43,44 +36,37 @@ static char	*read_buffer(int fd, char *leftover)
 static char	*get_line(char *leftover)
 {
 	char	*line;
-	size_t	i;
+	char	*ptr;
+	char	c;
 
-	if (!leftover || !*leftover)
+	if (!leftover || !leftover[0])
 		return (NULL);
-	i = 0;
-	while (leftover[i] && leftover[i] != SEP)
-		i++;
-	if (leftover[i] == SEP)
-		i++;
-	line = malloc(i + 1);
-	if (!line)
-		return (NULL);
-	ft_strlcpy(line, leftover, i + 1);
+	ptr = ft_strchr(leftover, SEP);
+	if (!ptr)
+		line = ft_strdup(leftover);
+	else
+	{
+		c = ptr[1];
+		ptr[1] = '\0';
+		line = ft_strdup(leftover);
+		ptr[1] = c;
+	}
 	return (line);
 }
 
 static char	*get_leftover(char *leftover)
 {
 	char	*res;
-	size_t	i;
-	size_t	j;
+	char	*ptr;
 
-	i = 0;
-	while (leftover[i] && leftover[i] != SEP)
-		i++;
-	if (!leftover[i] || !leftover[i + 1])
-	{
-		free(leftover);
-		return (NULL);
-	}
-	j = ft_strlen(leftover);
-	res = malloc(j - i);
+	ptr = ft_strchr(leftover, SEP);
+	if (!ptr)
+		return (free(leftover), NULL);
+	if (ptr[1] == '\0')
+		return (free(leftover), NULL);
+	res = ft_strdup(ptr + 1);
 	if (!res)
-	{
-		free(leftover);
-		return (NULL);
-	}
-	ft_strlcpy(res, leftover + i + 1, j - i);
+		return (free(leftover), NULL);
 	free(leftover);
 	return (res);
 }

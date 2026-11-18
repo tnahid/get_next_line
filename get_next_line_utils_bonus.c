@@ -6,7 +6,7 @@
 /*   By: tnahid <tnahid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/17 00:26:34 by tnahid            #+#    #+#             */
-/*   Updated: 2026/11/17 00:26:35 by tnahid           ###   ########.fr       */
+/*   Updated: 2026/11/18 01:20:57 by tnahid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,19 @@ char	*ft_strchr(char *str, int c)
 	if (str[i] == (char)c)
 		return (&str[i]);
 	return (NULL);
+}
+
+char	*ft_strdup(char	*str)
+{
+	size_t	i;
+	char	*dup;
+
+	i = ft_strlen(str);
+	dup = malloc(i + 1);
+	if (!dup)
+		return (NULL);
+	ft_strlcpy(dup, str, i + 1);
+	return (dup);
 }
 
 size_t	ft_strlcpy(char *dst, char *src, size_t size)
