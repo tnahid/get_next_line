@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: tnahid <tnahid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/11/17 00:25:54 by tnahid            #+#    #+#             */
-/*   Updated: 2026/11/18 00:56:14 by tnahid           ###   ########.fr       */
+/*   Created: 2026/11/17 13:57:53 by tnahid            #+#    #+#             */
+/*   Updated: 2026/11/18 09:21:57 by tnahid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,19 +38,6 @@ char	*ft_strchr(char *str, int c)
 	return (NULL);
 }
 
-char	*ft_strdup(char	*str)
-{
-	size_t	i;
-	char	*dup;
-
-	i = ft_strlen(str);
-	dup = malloc(i + 1);
-	if (!dup)
-		return (NULL);
-	ft_strlcpy(dup, str, i + 1);
-	return (dup);
-}
-
 size_t	ft_strlcpy(char *dst, char *src, size_t size)
 {
 	size_t	i;
@@ -69,29 +56,39 @@ size_t	ft_strlcpy(char *dst, char *src, size_t size)
 	return (s_len);
 }
 
+char	*ft_strdup(char	*str)
+{
+	size_t	len;
+	char	*dup;
+
+	len = ft_strlen(str);
+	dup = (char *)malloc(len + 1);
+	if (!dup)
+		return (NULL);
+	ft_strlcpy(dup, str, len + 1);
+	return (dup);
+}
+
 char	*ft_strjoin(char *s1, char *s2)
 {
-	char	*str;
 	size_t	len1;
 	size_t	len2;
+	char	*str;
 
 	if (!s2)
 		return (NULL);
 	if (!s1)
 	{
-		s1 = malloc(1);
+		s1 = (char *)malloc(1);
 		if (!s1)
 			return (NULL);
 		s1[0] = '\0';
 	}
 	len1 = ft_strlen(s1);
 	len2 = ft_strlen(s2);
-	str = malloc(len1 + len2 + 1);
+	str = (char *)malloc(len1 + len2 + 1);
 	if (!str)
-	{
-		free(s1);
-		return (NULL);
-	}
+		return (free(s1), NULL);
 	ft_strlcpy(str, s1, len1 + 1);
 	ft_strlcpy(str + len1, s2, len2 + 1);
 	free(s1);
