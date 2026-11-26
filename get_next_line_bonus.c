@@ -73,7 +73,7 @@ char	*get_next_line(int fd)
 	static char	*leftover[OPEN_FD];
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || fd >= OPEN_FD || BUFFER_SIZE <= 0)
 		return (NULL);
 	leftover[fd] = read_buffer(fd, leftover[fd]);
 	if (!leftover[fd])
